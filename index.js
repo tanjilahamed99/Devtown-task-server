@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 5001
 
 
 app.use(cors)
@@ -29,11 +29,12 @@ async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
-
+        const myStore = client.db("myStore")
+        const productsCollection = myStore.collection("products")
 
         app.get('/mobiles', async (req, res) => {
-
-            const result = await
+            const result = await productsCollection.find()
+            res.send(result)
 
         })
 
