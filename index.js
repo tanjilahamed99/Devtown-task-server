@@ -52,6 +52,11 @@ async function run() {
             res.send(result)
         })
 
+        //  get all my cart
+        app.get('/myCart', async (req, res) => {
+            const result = await buyMobilesCollection.find().toArray()
+            res.send(result)
+        })
 
 
 
