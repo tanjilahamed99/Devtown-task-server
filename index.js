@@ -1,14 +1,19 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const port = process.env.PORT || 5001
+const port = process.env.PORT || 5000
 
 
-app.use(cors)
+app.use(cors())
 app.use(express.json())
 
 // tanjilShop
 // Mq8yn6EDbuXmcMSJ
+
+app.get('/', (req, res) => {
+    res.send('welcome to my server site')
+})
+
 
 
 
@@ -31,11 +36,20 @@ async function run() {
         // await client.connect();
         const myStore = client.db("myStore")
         const productsCollection = myStore.collection("products")
+        const buyMobilesCollection = myStore.collection("buyMobiles")
 
+        //  get all the mobile
         app.get('/mobiles', async (req, res) => {
-            const result = await productsCollection.find()
+            const result = await productsCollection.find().toArray()
             res.send(result)
 
+        })
+
+        // buy a new mobile
+        app.post('/mobile', async (req, res) => {
+            const buyMobileData = req.body
+            const result = await buyMobilesCollection.insertOne(buyMobileData)
+            res.send(result)
         })
 
 
@@ -53,9 +67,7 @@ run().catch(console.dir);
 
 
 
-app.get('/', (req, res) => {
-    res.send('welcome to my server site')
-})
+
 
 app.listen(port, () => {
     console.log(`website running on port ${port}`)
