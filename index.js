@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 // const uri = "mongodb+srv://<username>:<password>@cluster0.8mn4lkn.mongodb.net/?retryWrites=true&w=majority";
 const uri = "mongodb+srv://tanjilShop:Mq8yn6EDbuXmcMSJ@cluster0.8mn4lkn.mongodb.net/?retryWrites=true&w=majority";
 
@@ -40,9 +40,52 @@ async function run() {
 
         //  get all the mobile
         app.get('/mobiles', async (req, res) => {
-            const result = await productsCollection.find().toArray()
+
+            const shortFlied = req.query.shortFlied
+            const shortOrder = req.query.shortOrder
+
+            const shortObj = {}
+
+            if (shortFlied !== 'undefined' && shortOrder !== 'undefined') {
+                shortObj[shortFlied] = shortOrdergit
+            }
+
+            const result = await productsCollection.find().sort(shortObj).toArray()
             res.send(result)
 
+        })
+        // get a single products 
+        app.get('/products/:id', async (req, res) => {
+            const id = req.params.id
+            // console.log(id)
+            const query = { _id: new ObjectId(id) }
+            const result = await productsCollection.findOne(query)
+            res.send(result)
+        })
+        // update a products 
+        app.patch('/product/:id', async (req, res) => {
+            const updatedData = req.body
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const updateDoc = {
+                $set: {
+                    name: updatedData.name,
+                    photo: updatedData.photo,
+                    brand: updatedData.brand,
+                    type: updatedData.type,
+                    price: updatedData.price,
+                    rating: updatedData.rating
+                }
+            }
+            const result = await productsCollection.updateOne(query, updateDoc)
+            res.send(result)
+
+        })
+        // add a new products 
+        app.post('/product', async (req, res) => {
+            const newProductData = req.body
+            const result = await productsCollection.insertOne(newProductData)
+            res.send(result)
         })
 
         // buy a new mobile
@@ -56,6 +99,14 @@ async function run() {
         app.get('/myCart', async (req, res) => {
             const result = await buyMobilesCollection.find().toArray()
             res.send(result)
+        })
+        // delete my cart data 
+        app.delete('/myCart/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await buyMobilesCollection.deleteOne(query)
+            res.send(result)
+
         })
 
 
