@@ -43,14 +43,20 @@ async function run() {
 
             const shortFlied = req.query.shortFlied
             const shortOrder = req.query.shortOrder
+            const search = req.query.search
+
+            let query = {}
+            if (search !== 'undefined') {
+                query.brand = { $in: search.split(',') }
+            }
 
             const shortObj = {}
 
             if (shortFlied !== 'undefined' && shortOrder !== 'undefined') {
-                shortObj[shortFlied] = shortOrdergit
+                shortObj[shortFlied] = shortOrder
             }
 
-            const result = await productsCollection.find().sort(shortObj).toArray()
+            const result = await productsCollection.find(query).sort(shortObj).toArray()
             res.send(result)
 
         })
